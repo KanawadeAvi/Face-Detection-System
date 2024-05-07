@@ -1,0 +1,37 @@
+<!-- home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    
+</head>
+<body>
+    <h1>Welcome, {{ username }}</h1>
+    <div id="message" style="text-align: right; color: rgb(18, 104, 75);font-weight: bold;">
+        {% if 'message' in session %}
+            <p>{{ session['message'] }}</p>
+            {% set _ = session.pop('message', None) %}
+        {% endif %}
+    </div>
+    <script>
+        // Function to show the message and then hide it after a delay
+        function showMessageAndHide() {
+          var messageDiv = document.getElementById('message');
+          messageDiv.style.display = 'block'; // Show the message
+          
+          // Hide the message after 3 seconds
+          setTimeout(function() {
+            messageDiv.style.display = 'none';
+          }, 2000); // 3000 milliseconds = 3 seconds
+        }
+        
+        // Call the function to show the message
+        showMessageAndHide();
+        </script>
+    <a href="/logout" style="padding-left: 45%;box-sizing: border-box;">Logout</a>
+</body>
+</html>

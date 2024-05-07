@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Login</h1>
+    <video id="videoElement" autoplay style="padding-left: 20%;"></video>
+    <button onclick="loginWithFace()" style="width: 60%;margin-left: 20%;">Scan Your Face</button>
+    <form id="loginForm" action="/login" method="post" style="display: none;"> <!-- Hide the form initially -->
+        <input type="hidden" id="imageData" name="imageData">
+    </form>
+    <script>
+        function showMessage(message) {
+            var popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = message;
+            document.body.appendChild(popup);
+            setTimeout(function() {
+                popup.remove();
+            }, 2000); // 2 seconds
+        }
+
+        function loginWithFace() {
+            var video = document.querySelector("#videoElement");
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    setTimeout(function() { // Delay to ensure the camera has enough time to start
+                        captureImage(); // Call the function to capture the image
+                    }, 1000);
+                })
+                .catch(function (error) {
+                    console.log("Something went wrong with camera access:", error);
+                });
+        }
+
+        function captureImage() {
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            var video = document.querySelector("#videoElement");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var imageData = canvas.toDataURL('image/jpeg');
+            document.getElementById('imageData').value = imageData;
+            document.getElementById('loginForm').submit(); // Submit the form after capturing the image
+        }
+    </script>
+</body>
+</html>

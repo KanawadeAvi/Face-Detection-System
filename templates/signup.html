@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Sign Up</h1>
+    {% if 'message' in session %}
+    <div class="popup">{{ session['message'] }}</div>
+    {% endif %}
+    <video id="videoElement" autoplay style="padding-left: 20%;"></video>
+    <button onclick="takePicture()" style="width: 60%;margin-left: 20%;">Take Picture</button>
+    <form id="signupForm" action="/signup" method="post" style="padding-left:20%;padding-right: 20%;">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required> <!-- Added 'required' attribute -->
+        <span id="usernameError" style="color: red;"></span> <!-- Element to display error message -->
+        <input type="hidden" id="imageData" name="imageData">
+        <button type="button" onclick="sendData()">Submit</button>
+    </form>
+    <script>
+        function takePicture() {
+            var video = document.querySelector("#videoElement");
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function (error) {
+                    console.log("Something went wrong with camera access:", error);
+                });
+        }
+
+        function sendData() {
+            var username = document.getElementById('username').value; // Get the value of username field
+            if (!username) { // Check if username field is empty
+                document.getElementById('usernameError').textContent = "Please enter a username"; // Show error message near the input field
+                return; // Prevent form submission
+            } else {
+                document.getElementById('usernameError').textContent = ""; // Clear error message if username is entered
+            }
+
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            var video = document.querySelector("#videoElement");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var imageData = canvas.toDataURL('image/jpeg');
+            document.getElementById('imageData').value = imageData;
+            document.getElementById('signupForm').submit();
+        }
+    </script>
+</body>
+</html>
